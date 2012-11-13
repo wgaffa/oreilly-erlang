@@ -1,5 +1,4 @@
 -module(listman).
--compile(export_all).
 -author("Patrik Maunus <subscription@skriptladan.se>").
 
 filter([], _) ->
@@ -17,15 +16,22 @@ reverse([], L) ->
 reverse([H|T], L) ->
 	reverse(T, [H|L]).
 	
-list_item([]) ->
-	[];
-list_item([H|T]) ->
-	[H|list_item(T)].
+
+list_item(L) ->
+    list_item(L, []).
+
+list_item([], Result) ->
+    reverse(Result);
+list_item([H|T], Result) ->
+    list_item(T, [H|Result]).
 	
-concatenate([]) ->
-	[];
-concatenate([H|T]) ->
-	list_item(H) ++ concatenate(T).
+concatenate(L) ->
+    concatenate(L, []).
+
+concatenate([], Result) ->
+    reverse(Result);
+concatenate([H|T], Result) ->
+    concatenate(T, [H|Result]).
 
 flat_item([]) ->
     [];
