@@ -26,4 +26,13 @@ concatenate([]) ->
 	[];
 concatenate([H|T]) ->
 	list_item(H) ++ concatenate(T).
-	
+
+flat_item([]) ->
+    [];
+flat_item([H|T]) when is_list(H) ->
+    flat_item(H) ++ flat_item(T);
+flat_item([H|T]) ->
+    [H|flat_item(T)].
+
+flatten(L) ->
+    flat_item(L).
