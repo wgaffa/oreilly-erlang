@@ -1,4 +1,5 @@
 -module(qsort).
+-export([qsort/1]).
 -author('Patrik Maunus <subscription@skriptladan.se').
 
 qsort(L) when length(L) < 2 ->

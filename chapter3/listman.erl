@@ -1,4 +1,5 @@
 -module(listman).
+-export([filter/2, reverse/1, concatenate/1, flatten/1]).
 -author("Patrik Maunus <subscription@skriptladan.se>").
 
 filter([], _) ->
