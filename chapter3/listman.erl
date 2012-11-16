@@ -17,15 +17,6 @@ reverse([], L) ->
 reverse([H|T], L) ->
 	reverse(T, [H|L]).
 	
-
-list_item(L) ->
-    list_item(L, []).
-
-list_item([], Result) ->
-    reverse(Result);
-list_item([H|T], Result) ->
-    list_item(T, [H|Result]).
-	
 concatenate(L) ->
     concatenate(L, []).
 
