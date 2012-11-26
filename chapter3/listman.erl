@@ -25,12 +25,15 @@ concatenate([], Result) ->
 concatenate([H|T], Result) ->
     concatenate(T, [H|Result]).
 
-flat_item([]) ->
-    [];
-flat_item([H|T]) when is_list(H) ->
-    flat_item(H) ++ flat_item(T);
-flat_item([H|T]) ->
-    [H|flat_item(T)].
+flat_item(L) ->
+    flat_item(L, []).
+
+flat_item([], Result) ->
+    reverse(Result);
+flat_item([H|T], Result) when is_list(H) ->
+    flat_item(H, Result);
+flat_item([H|T], Result) ->
+    flat_item(T, [H|Result]).
 
 flatten(L) ->
     flat_item(L).
