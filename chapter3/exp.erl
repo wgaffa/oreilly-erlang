@@ -26,6 +26,28 @@ rpn(String, Output, Stack) ->
 rpn(String) ->
     rpn(String, [], []).
 
+parse(Expression) ->
+    parser(lexer(Expression)).
+
+parser(Lex) ->
+    {Result, _Rest} = expression(Lex),
+    Result.
+
+expression(['~'|T]) ->
+    {X, Rest} = expression(T),
+    {{'~', X}, Rest};
+expression(['('|T]) ->
+    {Exp, [')'|Rest]} = bin(T),
+    {Exp, Rest};
+expression([{num, _} = H|T]) ->
+    {H, T}.
+
+bin(Lex) ->
+    {X, [Op|T]} = expression(Lex),
+    true = lists:member(Op, ['+', '-', '*', '/']),
+    {Y, Rest} = expression(T),
+    {{Op, X, Y}, Rest}.
+
 lexer([], Result) ->
     lists:reverse(Result);
 lexer([$+|T], Result) ->
@@ -66,6 +88,7 @@ lex_fract(L, Number, _) ->
 
 test() ->
     test_lexer(),
+    test_parser(),
     ok.
 
 test_lexer() ->
@@ -74,4 +97,9 @@ test_lexer() ->
     [{num, 65}, '-', {num, 7}, '*', {num, 4}, '/', {num, 2}] = lexer("65 - 7*4 /2"),
     ['(', '(', {num, 2}, '+', {num, 3}, ')', '-', {num, 4}, ')'] = lexer("((2+3)-4)"),
     ['~', '(', '(', {num, 2}, '*', {num, 3}, ')', '+', '(', {num, 3}, '*', {num, 4}, ')', ')'] = lexer("~((2*3)+(3*4))"),
+    ok.
+
+test_parser() ->
+    {'-', {'+', {num, 2}, {num, 3} }, {num, 4}} = parser(['(', '(', {num, 2}, '+', {num, 3}, ')', '-', {num, 4}, ')']),
+    {'~', {'+', {'*', {num, 2}, {num, 3} }, {'*', {num, 3}, {num, 4} } } } = parser(['~', '(', '(', {num, 2}, '*', {num, 3}, ')', '+', '(', {num, 3}, '*', {num, 4}, ')', ')']),
     ok.
