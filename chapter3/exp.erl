@@ -68,6 +68,23 @@ evaluate({num, Number}) ->
 evaluate({'~', Tuple}) ->
      -evaluate(Tuple).
 
+pretty_print({Op, Tuple1, Tuple2}) ->
+    PrettyOp = case Op of
+        '+' -> $+;
+        '-' -> $-;
+        '*' -> $*;
+        '/' -> $/;
+        '~' -> $~
+    end,
+    "(" ++ pretty_print(Tuple1) ++ [PrettyOp] ++ pretty_print(Tuple2) ++ ")";
+pretty_print({num, Number}) ->
+    integer_to_list(Number);
+pretty_print({'~', Tuple}) ->
+    [-pretty_print(Tuple)].
+
+pp(L) ->
+    pretty_print(L).
+
 lexer([], Result) ->
     lists:reverse(Result);
 lexer([$+|T], Result) ->
