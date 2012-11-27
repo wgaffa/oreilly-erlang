@@ -68,7 +68,6 @@ evaluate({num, Number}) ->
 evaluate({'~', Tuple}) ->
      -evaluate(Tuple).
 
-
 lexer([], Result) ->
     lists:reverse(Result);
 lexer([$+|T], Result) ->
@@ -110,6 +109,7 @@ lex_fract(L, Number, _) ->
 test() ->
     test_lexer(),
     test_parser(),
+    test_evaluate(),
     ok.
 
 test_lexer() ->
@@ -123,4 +123,9 @@ test_lexer() ->
 test_parser() ->
     {'-', {'+', {num, 2}, {num, 3} }, {num, 4}} = parser(['(', '(', {num, 2}, '+', {num, 3}, ')', '-', {num, 4}, ')']),
     {'~', {'+', {'*', {num, 2}, {num, 3} }, {'*', {num, 3}, {num, 4} } } } = parser(['~', '(', '(', {num, 2}, '*', {num, 3}, ')', '+', '(', {num, 3}, '*', {num, 4}, ')', ')']),
+    ok.
+
+test_evaluate() ->
+    1 = evaluate({'-', {'+', {num, 2}, {num, 3} }, {num, 4}}),
+    -18 = evaluate({'~', {'+', {'*', {num, 2}, {num, 3} }, {'*', {num, 3}, {num, 4} } } }),
     ok.
