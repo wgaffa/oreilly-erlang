@@ -48,6 +48,27 @@ bin(Lex) ->
     {Y, Rest} = expression(T),
     {{Op, X, Y}, Rest}.
 
+evaluate({Op, Tuple1, Tuple2}) ->
+    true = lists:member(Op, ['+', '-', '*', '/']),
+    [X, Y] = [evaluate(Tuple1), evaluate(Tuple2)],
+    case Op of
+	'+' ->
+	    X + Y;
+	'-' ->
+	    X - Y;
+	'*' ->
+	    X * Y;
+	'/' ->
+	    X / Y;
+	_ ->
+	    ok
+    end;
+evaluate({num, Number}) ->
+    Number;
+evaluate({'~', Tuple}) ->
+     -evaluate(Tuple).
+
+
 lexer([], Result) ->
     lists:reverse(Result);
 lexer([$+|T], Result) ->
