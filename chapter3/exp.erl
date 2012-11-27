@@ -26,9 +26,52 @@ rpn(String, Output, Stack) ->
 rpn(String) ->
     rpn(String, [], []).
 
+lexer([], Result) ->
+    lists:reverse(Result);
 lexer([$+|T], Result) ->
-    lexer(T, [plus|Result]);
+    lexer(T, ['+'|Result]);
 lexer([$-|T], Result) ->
-    lexer(T, [minus|Result]);
-lexer([H|T], Result) ->
-    
+    lexer(T, ['-'|Result]);
+lexer([$*|T], Result) ->
+    lexer(T, ['*'|Result]);
+lexer([$/|T], Result) ->
+    lexer(T, ['/'|Result]);
+lexer([$(|T], Result) ->
+    lexer(T, ['('|Result]);
+lexer([$)|T], Result) ->
+    lexer(T, [')'|Result]);
+lexer([$~|T], Result) ->
+    lexer(T, ['~'|Result]);
+lexer([$\s|T], Result) ->
+    lexer(T, Result); 
+lexer([H|_] = L, Result) when H >= $0, H =< $9 ->
+    {Number, Rest} = lex_num(L, 0),
+    lexer(Rest, [{num, Number}|Result]).
+
+lexer(L) ->
+    lexer(L, []).
+
+lex_num([H|T], Number) when H >= $0, H =< $9 ->
+    lex_num(T, 10 * Number + H - $0);
+lex_num([$.|T], Number) ->
+    {Fractal, Rest} = lex_fract(T, 0, 0.1),
+    {Number + Fractal, Rest};
+lex_num(L, Number) ->
+    {Number, L}.
+
+lex_fract([H|T], Number, Fract) when H >= $0, H =< $9 ->
+    lex_fract(T, Number + (H - $0) * Fract, Fract/10);
+lex_fract(L, Number, _) ->
+    {Number, L}.
+
+test() ->
+    test_lexer(),
+    ok.
+
+test_lexer() ->
+    [{num, 25}, '+', {num, 30}] = lexer("25+30"),
+    [{num, 4.35}] = lexer("4.35"),
+    [{num, 65}, '-', {num, 7}, '*', {num, 4}, '/', {num, 2}] = lexer("65 - 7*4 /2"),
+    ['(', '(', {num, 2}, '+', {num, 3}, ')', '-', {num, 4}, ')'] = lexer("((2+3)-4)"),
+    ['~', '(', '(', {num, 2}, '*', {num, 3}, ')', '+', '(', {num, 3}, '*', {num, 4}, ')', ')'] = lexer("~((2*3)+(3*4))"),
+    ok.
